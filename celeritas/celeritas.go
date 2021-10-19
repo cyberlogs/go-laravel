@@ -22,6 +22,7 @@ type Celeritas struct {
 	InfoLog  *log.Logger
 	RootPath string
 	Routes   *chi.Mux
+	Render   *render.Render
 	config   config
 }
 
@@ -64,6 +65,8 @@ func (c *Celeritas) New(rootPath string) error {
 		port:     os.Getenv("Port"),
 		renderer: os.Getenv("Renderer"),
 	}
+
+	c.Render = c.CreateRenderer(c)
 
 	return nil
 }
@@ -112,4 +115,15 @@ func (c *Celeritas) startLoggers() (*log.Logger, *log.Logger) {
 	errLog = log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
 
 	return infoLog, errLog
+}
+
+func (c *Celeritas) CreateRenderer(cel *Celeritas) *render.Render {
+	myRenderer := render.Render{
+		Renderer: cel.config.renderer,
+		RootPath: cel.RootPath,
+		Port:     cel.config.port,
+	}
+
+	return &myRenderer
+
 }
